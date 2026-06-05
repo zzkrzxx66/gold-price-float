@@ -52,7 +52,7 @@ public class FloatingWindowManager {
         this.context = context;
         this.windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         this.handler = new Handler(Looper.getMainLooper());
-        this.priceFetcher = new PriceFetcher();
+        this.priceFetcher = new PriceFetcher(context);
         this.settings = new SettingsManager(context);
     }
 
