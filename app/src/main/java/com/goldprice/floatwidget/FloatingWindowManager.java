@@ -212,7 +212,10 @@ public class FloatingWindowManager {
             public void onError(String error) {
                 handler.post(() -> {
                     if (tvCollapsedPrice != null) {
-                        tvCollapsedPrice.setText("--");
+                        tvCollapsedPrice.setText("加载失败");
+                    }
+                    if (tvAuPrice != null) {
+                        tvAuPrice.setText("获取失败: " + error);
                     }
                     Log.w(TAG, "Price fetch error: " + error);
                 });
@@ -221,7 +224,8 @@ public class FloatingWindowManager {
     }
 
     private void updateDisplay(PriceFetcher.GoldPrice price) {
-        String priceStr = String.format("%.2f", price.price);
+        String priceStr = String.format("%.2f", price.pricePerGram);
+        String ozPriceStr = String.format("%.2f", price.pricePerOz);
         String changeStr;
         int changeColor;
 
@@ -235,7 +239,7 @@ public class FloatingWindowManager {
 
         // Update collapsed view
         if (tvCollapsedPrice != null) {
-            tvCollapsedPrice.setText("¥" + priceStr);
+            tvCollapsedPrice.setText("Au ¥" + priceStr);
             tvCollapsedPrice.setTextColor(changeColor);
         }
         if (tvCollapsedLabel != null) {
@@ -256,7 +260,7 @@ public class FloatingWindowManager {
         }
 
         // Update notification
-        String notifyText = String.format("Au99.99: ¥%.2f %s", price.price, changeStr);
+        String notifyText = String.format("Au ¥%.2f/克 %s", price.pricePerGram, changeStr);
         if (context instanceof GoldPriceService) {
             ((GoldPriceService) context).updateNotification(notifyText);
         }
