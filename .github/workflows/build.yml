@@ -25,7 +25,16 @@ jobs:
         echo "/opt/gradle-8.5/bin" >> $GITHUB_PATH
 
     - name: Build Debug APK
-      run: gradle assembleDebug --no-daemon --stacktrace
+      run: |
+        gradle assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
+        EXIT_CODE=${PIPESTATUS[0]}
+        if [ $EXIT_CODE -ne 0 ]; then
+          echo "::error::Build failed with exit code $EXIT_CODE"
+          tail -100 build.log
+          # Extract compilation errors
+          grep -E "error:|FAILED|cannot find symbol|package .* does not exist" build.log || true
+        fi
+        exit $EXIT_CODE
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
