@@ -26,14 +26,23 @@ public class GoldPriceService extends Service {
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
-        floatingWindowManager = new FloatingWindowManager(this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        startForeground(NOTIFICATION_ID, createNotification("金价播报服务运行中"));
-        isRunning = true;
-        floatingWindowManager.start();
+        try {
+            Notification notification = createNotification("金价播报服务运行中");
+            startForeground(NOTIFICATION_ID, notification);
+            isRunning = true;
+
+            if (floatingWindowManager == null) {
+                floatingWindowManager = new FloatingWindowManager(this);
+            }
+            floatingWindowManager.start();
+        } catch (Exception e) {
+            Log.e(TAG, "Error starting service", e);
+            stopSelf();
+        }
         return START_STICKY;
     }
 
@@ -43,6 +52,7 @@ public class GoldPriceService extends Service {
         isRunning = false;
         if (floatingWindowManager != null) {
             floatingWindowManager.stop();
+            floatingWindowManager = null;
         }
     }
 
@@ -70,7 +80,7 @@ public class GoldPriceService extends Service {
     private Notification createNotification(String text) {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+                notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("💰 金价播报")
@@ -83,9 +93,13 @@ public class GoldPriceService extends Service {
     }
 
     public void updateNotification(String priceInfo) {
-        NotificationManager manager = getSystemService(NotificationManager.class);
-        if (manager != null) {
-            manager.notify(NOTIFICATION_ID, createNotification(priceInfo));
+        try {
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.notify(NOTIFICATION_ID, createNotification(priceInfo));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating notification", e);
         }
     }
 }

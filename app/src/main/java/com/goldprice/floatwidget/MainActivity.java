@@ -10,9 +10,7 @@ import android.provider.Settings;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -24,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btnToggle;
     private TextView tvStatus;
-    private boolean isServiceRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestPermissions() {
-        // Request notification permission for Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -80,23 +76,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startFloatingService() {
-        Intent serviceIntent = new Intent(this, GoldPriceService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent);
-        } else {
-            startService(serviceIntent);
+        try {
+            Intent serviceIntent = new Intent(this, GoldPriceService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent);
+            } else {
+                startService(serviceIntent);
+            }
+            updateUI();
+            Toast.makeText(this, "金价播报已启动", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "启动失败: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        isServiceRunning = true;
-        updateUI();
-        Toast.makeText(this, "金价播报已启动", Toast.LENGTH_SHORT).show();
     }
 
     private void stopFloatingService() {
-        Intent serviceIntent = new Intent(this, GoldPriceService.class);
-        stopService(serviceIntent);
-        isServiceRunning = false;
-        updateUI();
-        Toast.makeText(this, "金价播报已停止", Toast.LENGTH_SHORT).show();
+        try {
+            Intent serviceIntent = new Intent(this, GoldPriceService.class);
+            stopService(serviceIntent);
+            updateUI();
+            Toast.makeText(this, "金价播报已停止", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "停止失败: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void openAppSettings() {
@@ -106,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUI() {
-        isServiceRunning = GoldPriceService.isRunning;
-        if (isServiceRunning) {
+        boolean running = GoldPriceService.isRunning;
+        if (running) {
             btnToggle.setText("停止播报");
             btnToggle.setBackgroundTintList(
                     ContextCompat.getColorStateList(this, R.color.stop_red));
