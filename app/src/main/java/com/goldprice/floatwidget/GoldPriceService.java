@@ -17,9 +17,7 @@ public class GoldPriceService extends Service {
 
     private static final String TAG = "GoldPriceService";
     private static final String CHANNEL_ID = "gold_price_channel";
-    private static final String ALERT_CHANNEL_ID = "gold_alert_channel";
     private static final int NOTIFICATION_ID = 1001;
-    private static final int ALERT_NOTIFICATION_ID = 2001;
 
     public static boolean isRunning = false;
     private FloatingWindowManager floatingWindowManager;
@@ -27,7 +25,7 @@ public class GoldPriceService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        createNotificationChannels();
+        createNotificationChannel();
     }
 
     @Override
@@ -38,7 +36,7 @@ public class GoldPriceService extends Service {
             isRunning = true;
 
             if (floatingWindowManager == null) {
-                floatingWindowManager = new FloatingWindowManager(this, this::sendPriceAlert);
+                floatingWindowManager = new FloatingWindowManager(this);
             }
             floatingWindowManager.start();
         } catch (Exception e) {
@@ -64,21 +62,18 @@ public class GoldPriceService extends Service {
         return null;
     }
 
-    private void createNotificationChannels() {
+    private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager == null) return;
-
             NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID, "金价播报", NotificationManager.IMPORTANCE_LOW);
+                    CHANNEL_ID,
+                    "金价播报",
+                    NotificationManager.IMPORTANCE_LOW);
             channel.setDescription("实时黄金价格悬浮播报");
             channel.setShowBadge(false);
-            manager.createNotificationChannel(channel);
-
-            NotificationChannel alertChannel = new NotificationChannel(
-                    ALERT_CHANNEL_ID, "金价提醒", NotificationManager.IMPORTANCE_HIGH);
-            alertChannel.setDescription("金价到达目标价格时提醒");
-            manager.createNotificationChannel(alertChannel);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
         }
     }
 
@@ -105,31 +100,6 @@ public class GoldPriceService extends Service {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error updating notification", e);
-        }
-    }
-
-    private void sendPriceAlert(String title, String message) {
-        try {
-            Intent intent = new Intent(this, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                    intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-
-            Notification notification = new NotificationCompat.Builder(this, ALERT_CHANNEL_ID)
-                    .setContentTitle(title)
-                    .setContentText(message)
-                    .setSmallIcon(R.drawable.ic_gold)
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setDefaults(NotificationCompat.DEFAULT_ALL)
-                    .build();
-
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.notify(ALERT_NOTIFICATION_ID, notification);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error sending alert", e);
         }
     }
 }
