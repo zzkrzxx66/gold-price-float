@@ -33,9 +33,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnSettings = findViewById(R.id.btn_settings);
 
         btnToggle.setOnClickListener(v -> toggleService());
-        btnSettings.setOnClickListener(v -> {
-            startActivity(new Intent(this, SettingsActivity.class));
-        });
+        btnSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
 
         requestPermissions();
         updateUI();
@@ -63,18 +61,14 @@ public class MainActivity extends AppCompatActivity {
             stopFloatingService();
         } else {
             if (!Settings.canDrawOverlays(this)) {
-                requestOverlayPermission();
+                Toast.makeText(this, "请授予悬浮窗权限", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, OVERLAY_PERMISSION_CODE);
             } else {
                 startFloatingService();
             }
         }
-    }
-
-    private void requestOverlayPermission() {
-        Toast.makeText(this, "请授予悬浮窗权限", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:" + getPackageName()));
-        startActivityForResult(intent, OVERLAY_PERMISSION_CODE);
     }
 
     private void startFloatingService() {
@@ -94,8 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void stopFloatingService() {
         try {
-            Intent serviceIntent = new Intent(this, GoldPriceService.class);
-            stopService(serviceIntent);
+            stopService(new Intent(this, GoldPriceService.class));
             updateUI();
             Toast.makeText(this, "金价播报已停止", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
@@ -105,19 +98,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI() {
         boolean running = GoldPriceService.isRunning;
-        if (running) {
-            btnToggle.setText("停止播报");
-            btnToggle.setBackgroundTintList(
-                    ContextCompat.getColorStateList(this, R.color.stop_red));
-            tvStatus.setText("状态：运行中 ●");
-            tvStatus.setTextColor(ContextCompat.getColor(this, R.color.running_green));
-        } else {
-            btnToggle.setText("开始播报");
-            btnToggle.setBackgroundTintList(
-                    ContextCompat.getColorStateList(this, R.color.start_blue));
-            tvStatus.setText("状态：已停止");
-            tvStatus.setTextColor(ContextCompat.getColor(this, R.color.stopped_gray));
-        }
+        btnToggle.setText(running ? "停止播报" : "开始播报");
+        btnToggle.setBackgroundTintList(ContextCompat.getColorStateList(this,
+                running ? R.color.stop_red : R.color.start_blue));
+        tvStatus.setText(running ? "状态：运行中 ●" : "状态：已停止");
+        tvStatus.setTextColor(ContextCompat.getColor(this,
+                running ? R.color.running_green : R.color.stopped_gray));
     }
 
     @Override
