@@ -14,8 +14,8 @@ import java.util.concurrent.Executors;
 public class PriceFetcher {
 
     private static final String TAG = "PriceFetcher";
-    // 实时现货黄金 API（XAU/CNY，返回每盎司人民币价格）
-    private static final String PRIMARY_URL = "https://api.gold-api.com/price/XAU/CNY";
+    private static final String API_CNY = "https://api.gold-api.com/price/XAU/CNY";
+    private static final String API_USD = "https://api.gold-api.com/price/XAU/USD";
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -25,21 +25,16 @@ public class PriceFetcher {
     }
 
     public static class GoldPrice {
-        public double pricePerGram;   // 每克人民币
-        public double pricePerOz;     // 每盎司人民币
-        public double change;         // 涨跌
-        public double high;           // 最高
-        public double low;            // 最低
-        public String updatedAt;      // 更新时间
+        public double cnyPerGram;     // 国内金价 ¥/克
+        public double cnyPerOz;       // ¥/盎司
+        public double usdPerOz;       // 伦敦金 $/盎司
+        public String updatedAt;
         public long timestamp;
 
-        public GoldPrice(double pricePerGram, double pricePerOz, double change,
-                         double high, double low, String updatedAt) {
-            this.pricePerGram = pricePerGram;
-            this.pricePerOz = pricePerOz;
-            this.change = change;
-            this.high = high;
-            this.low = low;
+        public GoldPrice(double cnyPerGram, double cnyPerOz, double usdPerOz, String updatedAt) {
+            this.cnyPerGram = cnyPerGram;
+            this.cnyPerOz = cnyPerOz;
+            this.usdPerOz = usdPerOz;
             this.updatedAt = updatedAt;
             this.timestamp = System.currentTimeMillis();
         }
@@ -48,73 +43,50 @@ public class PriceFetcher {
     public void fetchPrice(PriceCallback callback) {
         executor.execute(() -> {
             try {
-                GoldPrice price = fetchFromGoldApi();
-                if (price != null) {
-                    callback.onSuccess(price);
+                Double usdPrice = fetchJsonPrice(API_USD);
+                Double cnyOzPrice = fetchJsonPrice(API_CNY);
+                if (cnyOzPrice != null) {
+                    double cnyPerGram = cnyOzPrice / 31.1035;
+                    double usd = (usdPrice != null) ? usdPrice : 0;
+                    String time = java.text.SimpleDateFormat.getTimeInstance(
+                            java.text.SimpleDateFormat.SHORT,
+                            java.util.Locale.getDefault())
+                            .format(new java.util.Date());
+                    callback.onSuccess(new GoldPrice(cnyPerGram, cnyOzPrice, usd, time));
+                } else if (usdPrice != null) {
+                    callback.onError("国内金价获取失败");
                 } else {
-                    callback.onError("无法获取金价数据");
+                    callback.onError("金价数据获取失败");
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Fetch error", e);
-                callback.onError("网络错误: " + e.getMessage());
+                callback.onError("网络错误");
             }
         });
     }
 
-    /**
-     * 从 gold-api.com 获取现货黄金价格
-     * 返回格式: {"currency":"CNY","price":29366.31,"exchangeRate":6.7888,"updatedAt":"..."}
-     * price 是每盎司人民币价格
-     */
-    private GoldPrice fetchFromGoldApi() {
+    private Double fetchJsonPrice(String apiUrl) {
         try {
-            URL url = new URL(PRIMARY_URL);
+            URL url = new URL(apiUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(10000);
-            conn.setReadTimeout(10000);
-            conn.setRequestProperty("User-Agent", "GoldPriceFloat/1.1");
+            conn.setConnectTimeout(8000);
+            conn.setReadTimeout(8000);
+            conn.setRequestProperty("User-Agent", "GoldPriceFloat/2.0");
             conn.setRequestMethod("GET");
 
-            int code = conn.getResponseCode();
-            Log.d(TAG, "API response code: " + code);
-
-            if (code == 200) {
+            if (conn.getResponseCode() == 200) {
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(conn.getInputStream(), "UTF-8"));
                 StringBuilder sb = new StringBuilder();
                 String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
+                while ((line = reader.readLine()) != null) sb.append(line);
                 reader.close();
 
-                String json = sb.toString();
-                Log.d(TAG, "API response: " + json);
-
-                JSONObject obj = new JSONObject(json);
-
-                // price = 每盎司人民币价格
-                double pricePerOz = obj.getDouble("price");
-
-                // 1 盎司 = 31.1035 克
-                double pricePerGram = pricePerOz / 31.1035;
-
-                // 取更新时间
-                String updatedAt = obj.optString("updatedAt", "");
-
-                // 涨跌和最高最低：API 不直接返回，用小幅估算
-                // 现货黄金日均波动约 0.5%~1%
-                double dailyRange = pricePerOz * 0.008;
-                double change = pricePerOz * 0.002;  // 默认显示小涨
-                double high = pricePerOz + dailyRange / 2;
-                double low = pricePerOz - dailyRange / 2;
-
-                return new GoldPrice(pricePerGram, pricePerOz, change, high, low, updatedAt);
-            } else {
-                Log.e(TAG, "API error code: " + code);
+                JSONObject obj = new JSONObject(sb.toString());
+                return obj.getDouble("price");
             }
         } catch (Exception e) {
-            Log.e(TAG, "Gold API fetch error", e);
+            Log.e(TAG, "Fetch error for " + apiUrl, e);
         }
         return null;
     }

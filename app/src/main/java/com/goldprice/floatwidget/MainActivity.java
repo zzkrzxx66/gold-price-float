@@ -33,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
         Button btnSettings = findViewById(R.id.btn_settings);
 
         btnToggle.setOnClickListener(v -> toggleService());
-        btnSettings.setOnClickListener(v -> openAppSettings());
+        btnSettings.setOnClickListener(v -> {
+            startActivity(new Intent(this, SettingsActivity.class));
+        });
 
         requestPermissions();
         updateUI();
@@ -99,12 +101,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, "停止失败: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-    }
-
-    private void openAppSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.parse("package:" + getPackageName()));
-        startActivity(intent);
     }
 
     private void updateUI() {
