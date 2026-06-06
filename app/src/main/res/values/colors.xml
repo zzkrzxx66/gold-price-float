@@ -11,7 +11,8 @@
     <color name="stop_red">#FFD32F2F</color>
     <color name="running_green">#FF4CAF50</color>
     <color name="stopped_gray">#FF666666</color>
-    <color name="gold">#FFFFD700</color>
+    <color name="gold">#FFD6A84F</color>
     <color name="dark_bg">#FF0F0F1E</color>
     <color name="card_bg">#FF1E1E3A</color>
+    <color name="launcher_bg">#111418</color>
 </resources>

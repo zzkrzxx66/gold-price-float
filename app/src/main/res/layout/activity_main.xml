@@ -1,74 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_app_gradient"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="28dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@drawable/bg_glass_card"
-        android:elevation="8dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="黄金实时金价"
-            android:textColor="#FFE082"
-            android:textSize="29sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="悬浮窗 · 国内金价 · 伦敦金 · 目标价提醒"
-            android:textColor="#9FA8C7"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/tv_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="状态：已停止"
-            android:textColor="#8E95AA"
-            android:textSize="15sp" />
-
-        <Button
-            android:id="@+id/btn_toggle"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="22dp"
-            android:background="@drawable/bg_gold_button"
-            android:text="开始播报"
-            android:textColor="#281700"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btn_settings"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_dark_button"
-            android:text="设置刷新 / 透明度 / 提醒"
-            android:textColor="#FFE082"
-            android:textSize="14sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
-            android:gravity="center"
-            android:text="点击悬浮窗展开详情
-长按拖动位置，设置自动生效"
-            android:textColor="#68708A"
-            android:textSize="12sp" />
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:gravity="center" android:padding="24dp" android:background="@drawable/bg_app_gradient">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_surface" android:padding="24dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Au" android:textColor="#D6A84F" android:textSize="42sp" android:textStyle="bold" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="金价播报" android:textColor="#F2F4F6" android:textSize="25sp" android:textStyle="bold" android:layout_marginTop="8dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="桌面级悬浮窗 · 国内金价 · 伦敦金" android:textColor="#8F98A3" android:textSize="13sp" android:layout_marginTop="6dp" />
+        <TextView android:id="@+id/tv_status" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="状态：已停止" android:textColor="#8F98A3" android:textSize="14sp" android:layout_marginTop="28dp" />
+        <Button android:id="@+id/btn_toggle" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="18dp" android:background="@drawable/bg_primary_button" android:text="开始播报" android:textColor="#121212" android:textSize="16sp" android:textStyle="bold" />
+        <Button android:id="@+id/btn_settings" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="10dp" android:background="@drawable/bg_secondary_button" android:text="设置" android:textColor="#C8CED6" android:textSize="15sp" />
     </LinearLayout>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:gravity="center" android:text="点按悬浮窗展开详情，长按拖动位置" android:textColor="#5F6873" android:textSize="12sp" />
 </LinearLayout>

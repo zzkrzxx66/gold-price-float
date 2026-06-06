@@ -107,13 +107,13 @@ public class MainActivity extends AppCompatActivity {
         boolean running = GoldPriceService.isRunning;
         if (running) {
             btnToggle.setText("停止播报");
-            btnToggle.setBackgroundResource(R.drawable.bg_dark_button);
+            btnToggle.setBackgroundResource(R.drawable.bg_secondary_button);
             btnToggle.setTextColor(ContextCompat.getColor(this, R.color.gold));
             tvStatus.setText("状态：运行中 ●");
             tvStatus.setTextColor(ContextCompat.getColor(this, R.color.running_green));
         } else {
             btnToggle.setText("开始播报");
-            btnToggle.setBackgroundResource(R.drawable.bg_gold_button);
+            btnToggle.setBackgroundResource(R.drawable.bg_primary_button);
             btnToggle.setTextColor(0xFF281700);
             tvStatus.setText("状态：已停止");
             tvStatus.setTextColor(ContextCompat.getColor(this, R.color.stopped_gray));
