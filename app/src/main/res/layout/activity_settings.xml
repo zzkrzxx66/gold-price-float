@@ -1,211 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1a1a2e"
-    android:orientation="vertical"
-    android:padding="24dp">
-
-    <!-- 标题栏 -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp">
-
-        <Button
-            android:id="@+id/btn_back"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:backgroundTint="#333355"
-            android:text="← 返回"
-            android:textColor="#FFD700"
-            android:textSize="13sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="⚙ 设置"
-            android:textColor="#FFD700"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
-
-    <!-- 刷新频率 -->
-    <TextView
-        android:id="@+id/tv_refresh_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="刷新频率"
-        android:textColor="#CCCCCC"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
-
-    <RadioGroup
-        android:id="@+id/rg_refresh"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="20dp">
-
-        <RadioButton
-            android:id="@+id/rb_15s"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="15秒"
-            android:textColor="#AAAAAA"
-            android:buttonTint="#FFD700" />
-
-        <RadioButton
-            android:id="@+id/rb_30s"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="30秒"
-            android:textColor="#AAAAAA"
-            android:buttonTint="#FFD700" />
-
-        <RadioButton
-            android:id="@+id/rb_60s"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="1分钟"
-            android:textColor="#AAAAAA"
-            android:buttonTint="#FFD700" />
-
-        <RadioButton
-            android:id="@+id/rb_300s"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="5分钟"
-            android:textColor="#AAAAAA"
-            android:buttonTint="#FFD700" />
-    </RadioGroup>
-
-    <!-- 透明度 -->
-    <TextView
-        android:id="@+id/tv_opacity_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="透明度: 85%"
-        android:textColor="#CCCCCC"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
-
-    <SeekBar
-        android:id="@+id/seek_opacity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="100"
-        android:progress="85"
-        android:progressTint="#FFD700"
-        android:thumbTint="#FFD700"
-        android:layout_marginBottom="24dp" />
-
-    <!-- 显示伦敦金 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
-
-        <Switch
-            android:id="@+id/sw_london"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="#FFD700"
-            android:trackTint="#333355" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="  显示伦敦金（XAU/USD）"
-            android:textColor="#CCCCCC"
-            android:textSize="15sp"
-            android:layout_marginStart="12dp" />
-    </LinearLayout>
-
-
-    <!-- 金价提醒 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="12dp">
-
-        <Switch
-            android:id="@+id/sw_alert"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="#FFD700"
-            android:trackTint="#333355" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="  开启金价提醒（按 ¥/克）"
-            android:textColor="#CCCCCC"
-            android:textSize="15sp"
-            android:layout_marginStart="12dp" />
-    </LinearLayout>
+    android:background="@drawable/bg_app_gradient"
+    android:fillViewport="true">
 
     <LinearLayout
-        android:id="@+id/layout_alert_settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone"
-        android:padding="12dp"
-        android:background="#22223A"
-        android:layout_marginBottom="16dp">
+        android:padding="20dp">
 
-        <EditText
-            android:id="@+id/et_alert_above"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="高于此价格提醒，例如 760"
-            android:inputType="numberDecimal"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#777777"
-            android:singleLine="true" />
+            android:layout_marginBottom="18dp">
 
-        <EditText
-            android:id="@+id/et_alert_below"
+            <Button
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_dark_button"
+                android:text="← 返回"
+                android:textColor="#FFE082"
+                android:textSize="13sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="设置"
+                android:textColor="#FFE082"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="低于此价格提醒，例如 720"
-            android:inputType="numberDecimal"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#777777"
-            android:singleLine="true" />
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:elevation="6dp">
 
-        <Button
-            android:id="@+id/btn_save_alert"
+            <TextView
+                android:id="@+id/tv_refresh_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="刷新频率"
+                android:textColor="#F4D37A"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/rg_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+                <RadioButton android:id="@+id/rb_15s" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="15秒" android:textColor="#C9D0E8" android:buttonTint="#FFE082" />
+                <RadioButton android:id="@+id/rb_30s" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="30秒" android:textColor="#C9D0E8" android:buttonTint="#FFE082" />
+                <RadioButton android:id="@+id/rb_60s" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="1分钟" android:textColor="#C9D0E8" android:buttonTint="#FFE082" />
+                <RadioButton android:id="@+id/rb_300s" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="5分钟" android:textColor="#C9D0E8" android:buttonTint="#FFE082" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#333355"
-            android:text="保存提醒价格"
-            android:textColor="#FFD700" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:elevation="6dp">
+
+            <TextView
+                android:id="@+id/tv_opacity_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="透明度: 85%"
+                android:textColor="#F4D37A"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <SeekBar
+                android:id="@+id/seek_opacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progress="85"
+                android:progressTint="#FFE082"
+                android:thumbTint="#FFE082"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:elevation="6dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <Switch android:id="@+id/sw_london" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="#FFE082" android:trackTint="#3E425D" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="显示伦敦金（XAU/USD）" android:textColor="#C9D0E8" android:textSize="15sp" android:layout_marginStart="12dp" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#22FFD700" android:layout_marginTop="14dp" android:layout_marginBottom="14dp" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <Switch android:id="@+id/sw_alert" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="#FFE082" android:trackTint="#3E425D" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="开启目标价提醒（¥/克）" android:textColor="#C9D0E8" android:textSize="15sp" android:layout_marginStart="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_alert_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginTop="12dp">
+
+                <EditText
+                    android:id="@+id/et_alert_above"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:background="@drawable/bg_input_dark"
+                    android:hint="高于此价格提醒，例如 760"
+                    android:inputType="numberDecimal"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#7D849C"
+                    android:singleLine="true" />
+
+                <EditText
+                    android:id="@+id/et_alert_below"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_dark"
+                    android:hint="低于此价格提醒，例如 720"
+                    android:inputType="numberDecimal"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#7D849C"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/btn_save_alert"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_gold_button"
+                    android:text="保存提醒价格"
+                    android:textColor="#281700"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="设置自动保存，返回即生效"
+            android:textColor="#717990"
+            android:textSize="12sp"
+            android:layout_gravity="center" />
     </LinearLayout>
-
-    <!-- 提示 -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="设置自动保存，返回即生效"
-        android:textColor="#666666"
-        android:textSize="12sp"
-        android:layout_gravity="center" />
-
-</LinearLayout>
+</ScrollView>
