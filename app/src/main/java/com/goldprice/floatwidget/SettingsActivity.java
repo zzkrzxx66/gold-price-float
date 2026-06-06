@@ -1,7 +1,9 @@
 package com.goldprice.floatwidget;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -23,6 +25,7 @@ public class SettingsActivity extends AppCompatActivity {
         setupRefreshInterval();
         setupOpacity();
         setupLondonToggle();
+        setupAlert();
         setupBackButton();
     }
 
@@ -83,6 +86,45 @@ public class SettingsActivity extends AppCompatActivity {
         sw.setChecked(settings.isShowLondon());
         sw.setOnCheckedChangeListener((buttonView, isChecked) -> {
             settings.setShowLondon(isChecked);
+        });
+    }
+
+    private void setupAlert() {
+        Switch swAlert = findViewById(R.id.sw_alert);
+        View alertPanel = findViewById(R.id.layout_alert_settings);
+        EditText etAbove = findViewById(R.id.et_alert_above);
+        EditText etBelow = findViewById(R.id.et_alert_below);
+        Button btnSave = findViewById(R.id.btn_save_alert);
+
+        if (swAlert == null || alertPanel == null || etAbove == null || etBelow == null || btnSave == null) return;
+
+        boolean enabled = settings.isAlertEnabled();
+        swAlert.setChecked(enabled);
+        alertPanel.setVisibility(enabled ? View.VISIBLE : View.GONE);
+
+        double above = settings.getAlertPriceAbove();
+        double below = settings.getAlertPriceBelow();
+        if (above > 0) etAbove.setText(String.valueOf(above));
+        if (below > 0) etBelow.setText(String.valueOf(below));
+
+        swAlert.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            settings.setAlertEnabled(isChecked);
+            alertPanel.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+        });
+
+        btnSave.setOnClickListener(v -> {
+            try {
+                String a = etAbove.getText().toString().trim();
+                String b = etBelow.getText().toString().trim();
+                double aboveVal = a.isEmpty() ? 0 : Double.parseDouble(a);
+                double belowVal = b.isEmpty() ? 0 : Double.parseDouble(b);
+                settings.setAlertPriceAbove(aboveVal);
+                settings.setAlertPriceBelow(belowVal);
+                settings.setAlertEnabled(swAlert.isChecked());
+                Toast.makeText(this, "提醒价格已保存", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "请输入有效数字", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

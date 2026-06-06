@@ -37,6 +37,9 @@ public class FloatingWindowManager {
     private TextView tvUsdPrice;
     private TextView tvExpCny;
     private TextView tvExpUsd;
+    private TextView tvChange;
+    private TextView tvExpChange;
+    private TextView tvExpCache;
     private TextView tvExpTime;
     private LinearLayout layoutCollapsed;
     private LinearLayout layoutExpanded;
@@ -47,6 +50,8 @@ public class FloatingWindowManager {
 
     private int refreshInterval = 30; // 秒
     private Runnable refreshRunnable;
+    private boolean alertAboveSent = false;
+    private boolean alertBelowSent = false;
 
     public FloatingWindowManager(Context context) {
         this.context = context;
@@ -83,6 +88,9 @@ public class FloatingWindowManager {
         tvUsdPrice = floatingView.findViewById(R.id.tv_usd_price);
         tvExpCny = floatingView.findViewById(R.id.tv_exp_cny);
         tvExpUsd = floatingView.findViewById(R.id.tv_exp_usd);
+        tvChange = floatingView.findViewById(R.id.tv_change);
+        tvExpChange = floatingView.findViewById(R.id.tv_exp_change);
+        tvExpCache = floatingView.findViewById(R.id.tv_exp_cache);
         tvExpTime = floatingView.findViewById(R.id.tv_exp_time);
         layoutCollapsed = floatingView.findViewById(R.id.layout_collapsed);
         layoutExpanded = floatingView.findViewById(R.id.layout_expanded);
@@ -223,6 +231,7 @@ public class FloatingWindowManager {
                 handler.post(() -> {
                     if (!isRunning || floatingView == null) return;
                     updateDisplay(price);
+                    checkPriceAlert(price);
                     if (context instanceof GoldPriceService) {
                         ((GoldPriceService) context).updateNotification(
                                 String.format("¥%.2f/克", price.cnyPerGram));
@@ -261,9 +270,50 @@ public class FloatingWindowManager {
             tvExpUsd.setText(String.format("伦敦金 $%.2f/盎司", price.usdPerOz));
             tvExpUsd.setVisibility(settings.isShowLondon() ? View.VISIBLE : View.GONE);
         }
+        String changeText = buildChangeText(price);
+        int changeColor = getChangeColor(price);
+        if (tvChange != null) {
+            tvChange.setText(changeText);
+            tvChange.setTextColor(changeColor);
+        }
+        if (tvExpChange != null) {
+            tvExpChange.setText("涨跌 " + changeText);
+            tvExpChange.setTextColor(changeColor);
+        }
+        if (tvExpCache != null) {
+            tvExpCache.setText(price.fromCache ? "数据源: 缓存" : "数据源: 实时");
+        }
         if (tvExpTime != null) {
             String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
             tvExpTime.setText("更新: " + time);
         }
+    }
+
+    private String buildChangeText(PriceFetcher.GoldPrice price) {
+        if (price.prevCnyPerGram <= 0) return "--";
+        String arrow = price.change > 0 ? "↑" : (price.change < 0 ? "↓" : "→");
+        return String.format("%s %.2f (%.2f%%)", arrow, Math.abs(price.change), Math.abs(price.changePercent));
+    }
+
+    private int getChangeColor(PriceFetcher.GoldPrice price) {
+        if (price.change > 0.001) return 0xFFFF5252;
+        if (price.change < -0.001) return 0xFF4CAF50;
+        return 0xFF888888;
+    }
+
+    private void checkPriceAlert(PriceFetcher.GoldPrice price) {
+        if (!settings.isAlertEnabled() || !(context instanceof GoldPriceService)) return;
+        double above = settings.getAlertPriceAbove();
+        double below = settings.getAlertPriceBelow();
+        if (above > 0 && price.cnyPerGram >= above && !alertAboveSent) {
+            alertAboveSent = true;
+            ((GoldPriceService) context).sendPriceAlert("金价已高于目标价", String.format("当前 ¥%.2f/克，目标 ¥%.2f/克", price.cnyPerGram, above));
+        }
+        if (below > 0 && price.cnyPerGram <= below && !alertBelowSent) {
+            alertBelowSent = true;
+            ((GoldPriceService) context).sendPriceAlert("金价已低于目标价", String.format("当前 ¥%.2f/克，目标 ¥%.2f/克", price.cnyPerGram, below));
+        }
+        if (above <= 0 || price.cnyPerGram < above * 0.995) alertAboveSent = false;
+        if (below <= 0 || price.cnyPerGram > below * 1.005) alertBelowSent = false;
     }
 }

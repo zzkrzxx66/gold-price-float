@@ -18,6 +18,7 @@ public class GoldPriceService extends Service {
     private static final String TAG = "GoldPriceService";
     private static final String CHANNEL_ID = "gold_price_channel";
     private static final int NOTIFICATION_ID = 1001;
+    private static final int ALERT_NOTIFICATION_ID = 1002;
 
     public static boolean isRunning = false;
     private FloatingWindowManager floatingWindowManager;
@@ -100,6 +101,26 @@ public class GoldPriceService extends Service {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error updating notification", e);
+        }
+    }
+
+    public void sendPriceAlert(String title, String message) {
+        try {
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 1,
+                    notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle(title)
+                    .setContentText(message)
+                    .setSmallIcon(R.drawable.ic_gold)
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .build();
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) manager.notify(ALERT_NOTIFICATION_ID, notification);
+        } catch (Exception e) {
+            Log.e(TAG, "Error sending alert", e);
         }
     }
 }
